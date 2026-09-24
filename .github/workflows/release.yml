@@ -6,6 +6,8 @@ on:
       - main
     paths:
       - SKILL.md
+      - agents/openai.yaml
+      - assets/**
       - .github/workflows/release.yml
   workflow_dispatch:
 
@@ -24,23 +26,27 @@ jobs:
         id: version
         shell: bash
         run: |
+          set -euo pipefail
           VERSION="$(grep -m1 '^Версия: v' SKILL.md | sed 's/^Версия: //')"
           if [ -z "$VERSION" ]; then
             echo "Version not found in SKILL.md"
             exit 1
           fi
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-          echo "Version: $VERSION"
 
       - name: Build installable ZIP
         shell: bash
         run: |
+          set -euo pipefail
           VERSION="${{ steps.version.outputs.version }}"
           ARCHIVE="russian-response-standard-$VERSION.zip"
 
           rm -rf release
           mkdir -p release/russian-response-standard
-          cp SKILL.md release/russian-response-standard/SKILL.md
+
+          cp SKILL.md release/russian-response-standard/
+          cp -R agents release/russian-response-standard/
+          cp -R assets release/russian-response-standard/
 
           (
             cd release
@@ -54,10 +60,10 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
+          set -euo pipefail
           VERSION="${{ steps.version.outputs.version }}"
 
           if gh release view "$VERSION" >/dev/null 2>&1; then
-            echo "Release $VERSION already exists. Uploading the current archive."
             gh release upload "$VERSION" "$ARCHIVE" --clobber
           else
             gh release create "$VERSION" "$ARCHIVE" \

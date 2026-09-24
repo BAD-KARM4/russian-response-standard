@@ -1,0 +1,6 @@
+interface:
+  display_name: "Russian Response Standard"
+  short_description: "Единый стандарт качественных ответов на русском"
+  icon_small: "./assets/icon.svg"
+  icon_large: "./assets/icon.svg"
+  default_prompt: "Используй $russian-response-standard, чтобы дать точный, естественный и хорошо структурированный ответ на русском языке."

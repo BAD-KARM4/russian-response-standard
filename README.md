@@ -2,7 +2,6 @@
 
 Russian Response Standard — Skill для ChatGPT Work, который задаёт единый стандарт качества ответов на русском языке.
 
-
 ## Что регулирует Skill
 
 Skill задаёт правила для:
@@ -22,12 +21,13 @@ Skill задаёт правила для:
 
 ## Структура репозитория
 
-- `SKILL.md` — текущая стабильная версия Skill
+- `SKILL.md` — инструкции и правила Skill
+- `agents/openai.yaml` — метаданные интерфейса ChatGPT
+- `assets/icon.svg` — иконка Skill
 - `tests/regression.md` — набор ручных регрессионных тестов
 
 ## Использование
 
-Добавьте `SKILL.md` как Skill в ChatGPT Work и используйте его для русскоязычных задач.
+Для установки используйте ZIP-архив из GitHub Releases. В релизный архив входят `SKILL.md`, `agents/openai.yaml` и `assets/icon.svg`.
 
 После изменений в Skill прогоните контрольные запросы из `tests/regression.md`. Регрессионные тесты не входят в инструкции Skill и не должны влиять на его поведение.
-
