@@ -34,6 +34,18 @@ jobs:
           fi
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
+      - name: Ensure version is unreleased
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION="${{ steps.version.outputs.version }}"
+          if gh release view "$VERSION" >/dev/null 2>&1; then
+            echo "Release $VERSION already exists. Bump the version in SKILL.md before publishing new content."
+            exit 1
+          fi
+
       - name: Build installable ZIP
         shell: bash
         run: |
@@ -62,12 +74,7 @@ jobs:
         run: |
           set -euo pipefail
           VERSION="${{ steps.version.outputs.version }}"
-
-          if gh release view "$VERSION" >/dev/null 2>&1; then
-            gh release upload "$VERSION" "$ARCHIVE" --clobber
-          else
-            gh release create "$VERSION" "$ARCHIVE" \
-              --target "$GITHUB_SHA" \
-              --title "$VERSION" \
-              --generate-notes
-          fi
+          gh release create "$VERSION" "$ARCHIVE" \
+            --target "$GITHUB_SHA" \
+            --title "$VERSION" \
+            --generate-notes
