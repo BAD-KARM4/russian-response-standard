@@ -1,0 +1,67 @@
+name: Publish Skill Release
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - SKILL.md
+      - .github/workflows/release.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Read version from SKILL.md
+        id: version
+        shell: bash
+        run: |
+          VERSION="$(grep -m1 '^Версия: v' SKILL.md | sed 's/^Версия: //')"
+          if [ -z "$VERSION" ]; then
+            echo "Version not found in SKILL.md"
+            exit 1
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Version: $VERSION"
+
+      - name: Build installable ZIP
+        shell: bash
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          ARCHIVE="russian-response-standard-$VERSION.zip"
+
+          rm -rf release
+          mkdir -p release/russian-response-standard
+          cp SKILL.md release/russian-response-standard/SKILL.md
+
+          (
+            cd release
+            zip -r "../$ARCHIVE" russian-response-standard
+          )
+
+          echo "ARCHIVE=$ARCHIVE" >> "$GITHUB_ENV"
+
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+
+          if gh release view "$VERSION" >/dev/null 2>&1; then
+            echo "Release $VERSION already exists. Uploading the current archive."
+            gh release upload "$VERSION" "$ARCHIVE" --clobber
+          else
+            gh release create "$VERSION" "$ARCHIVE" \
+              --target "$GITHUB_SHA" \
+              --title "$VERSION" \
+              --generate-notes
+          fi
