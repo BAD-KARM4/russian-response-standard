@@ -22,6 +22,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Validate package
+        run: python3 scripts/validate-package.py
+
       - name: Read version from SKILL.md
         id: version
         shell: bash
@@ -95,6 +98,35 @@ jobs:
           )
 
           echo "ARCHIVE=$ARCHIVE" >> "$GITHUB_ENV"
+
+      - name: Validate installable ZIP
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import os
+          import zipfile
+
+          archive = os.environ["ARCHIVE"]
+          expected = {
+              "russian-response-standard/SKILL.md",
+              "russian-response-standard/agents/openai.yaml",
+              "russian-response-standard/assets/icon.svg",
+          }
+
+          with zipfile.ZipFile(archive) as package:
+              actual = {name for name in package.namelist() if not name.endswith("/")}
+
+          if actual != expected:
+              missing = sorted(expected - actual)
+              extra = sorted(actual - expected)
+              raise SystemExit(
+                  f"Invalid installable ZIP. Missing: {missing or 'none'}. "
+                  f"Unexpected: {extra or 'none'}."
+              )
+
+          print("Installable ZIP contents are valid")
+          PY
 
       - name: Publish GitHub Release
         env:

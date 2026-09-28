@@ -10,6 +10,7 @@
 - README.md описывает назначение, структуру и установку.
 - agents/openai.yaml содержит интерфейсные метаданные.
 - assets/icon.svg содержит иконку Skill.
+- scripts/validate-package.py автоматически проверяет целостность и согласованность пакета.
 
 ## Изменения Skill
 
@@ -57,13 +58,35 @@ Release workflow берёт описание GitHub Release из блока CHAN
 
 README.md, CHANGELOG.md, AGENTS.md, tests и .github остаются только в репозитории.
 
+## Автоматическая валидация
+
+Перед публикацией release workflow запускает:
+
+```
+python3 scripts/validate-package.py
+```
+
+Тот же валидатор запускается отдельным GitHub Actions workflow при push и pull request.
+
+Валидатор проверяет:
+
+- обязательные файлы репозитория
+- структуру YAML frontmatter в SKILL.md
+- формат и единственность версии в SKILL.md
+- совпадение текущей версии с первой записью CHANGELOG.md
+- отсутствие дублирующихся версий в CHANGELOG.md
+- отсутствие Unicode em dash U+2014 и en dash U+2013 в SKILL.md
+- отсутствие inline-code оформления вне fenced code blocks в SKILL.md
+- базовую согласованность agents/openai.yaml, README.md и release workflow
+
+Release workflow дополнительно проверяет точный состав готового ZIP-архива.
+
 ## Проверки перед публикацией
 
 Перед выпуском новой версии проверь:
 
-- YAML frontmatter в SKILL.md валиден
+- локальный валидатор завершается успешно
 - версия в SKILL.md совпадает с новой записью CHANGELOG.md
 - для версии ещё не существует GitHub Release
-- в SKILL.md нет Unicode em dash U+2014 и en dash U+2013
 - изменения поведения покрыты существующими или новыми regression tests
-- installable ZIP не содержит репозиторные служебные файлы
+- installable ZIP содержит только SKILL.md, agents/openai.yaml и assets/icon.svg
