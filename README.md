@@ -1,6 +1,6 @@
 # Russian Response Standard
 
-Russian Response Standard — Skill для ChatGPT Work, который задаёт единый стандарт качества ответов на русском языке.
+Russian Response Standard - Skill для ChatGPT Work, который задаёт единый стандарт качества ответов на русском языке.
 
 ## Что регулирует Skill
 
@@ -21,13 +21,28 @@ Skill задаёт правила для:
 
 ## Структура репозитория
 
-- `SKILL.md` — инструкции и правила Skill
-- `agents/openai.yaml` — метаданные интерфейса ChatGPT
-- `assets/icon.svg` — иконка Skill
-- `tests/regression.md` — набор ручных регрессионных тестов
+- `SKILL.md` - инструкции и правила Skill
+- `CHANGELOG.md` - история изменений по версиям
+- `AGENTS.md` - правила сопровождения и выпуска новых версий
+- `agents/openai.yaml` - метаданные интерфейса ChatGPT
+- `assets/icon.svg` - иконка Skill
+- `tests/regression.md` - набор ручных регрессионных тестов
+- `.github/workflows/release.yml` - автоматическая сборка и публикация релиза
 
 ## Использование
 
 Для установки используйте ZIP-архив из GitHub Releases. В релизный архив входят `SKILL.md`, `agents/openai.yaml` и `assets/icon.svg`.
 
 После изменений в Skill прогоните контрольные запросы из `tests/regression.md`. Регрессионные тесты не входят в инструкции Skill и не должны влиять на его поведение.
+
+## История изменений
+
+Изменения каждой версии фиксируются в [CHANGELOG.md](CHANGELOG.md).
+
+GitHub Release использует запись соответствующей версии из CHANGELOG.md как release notes.
+
+## Разработка
+
+Изменение поведения Skill сопровождается новой версией, записью в CHANGELOG.md и регрессионной проверкой, когда для изменения можно сформулировать отдельный тест.
+
+Опубликованные релизы не изменяются задним числом. Подробные правила сопровождения находятся в [AGENTS.md](AGENTS.md).

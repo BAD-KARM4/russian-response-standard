@@ -46,6 +46,35 @@ jobs:
             exit 1
           fi
 
+      - name: Read release notes from CHANGELOG.md
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION="${{ steps.version.outputs.version }}"
+
+          awk -v version="$VERSION" '
+            $0 == "## " version {
+              found = 1
+              next
+            }
+            found && /^## / {
+              exit
+            }
+            found {
+              print
+            }
+            END {
+              if (!found) {
+                exit 2
+              }
+            }
+          ' CHANGELOG.md > release-notes.md
+
+          if [ ! -s release-notes.md ]; then
+            echo "Release notes for $VERSION not found in CHANGELOG.md"
+            exit 1
+          fi
+
       - name: Build installable ZIP
         shell: bash
         run: |
@@ -77,4 +106,4 @@ jobs:
           gh release create "$VERSION" "$ARCHIVE" \
             --target "$GITHUB_SHA" \
             --title "$VERSION" \
-            --generate-notes
+            --notes-file release-notes.md

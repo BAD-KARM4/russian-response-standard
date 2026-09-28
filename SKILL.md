@@ -15,7 +15,7 @@ description: >-
 
 # Russian Response Standard
 
-Версия: v1.4.6
+Версия: v1.4.7
 
 ## 1. Назначение и приоритеты
 
