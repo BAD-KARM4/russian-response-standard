@@ -11,6 +11,7 @@
 - agents/openai.yaml содержит интерфейсные метаданные.
 - assets/icon.svg содержит иконку Skill.
 - scripts/validate-package.py автоматически проверяет целостность и согласованность пакета.
+- scripts/build-plugin.py собирает плагин из основного SKILL.md и проверяет его содержимое.
 
 ## Изменения Skill
 
@@ -48,15 +49,22 @@ GitHub Releases считаются неизменяемыми.
 
 Release workflow берёт описание GitHub Release из блока CHANGELOG.md с заголовком, совпадающим с текущей версией SKILL.md.
 
-## Installable ZIP
+## Архивы релиза
 
-В установочный архив входят только:
+Архив навыка для ChatGPT Work содержит только:
 
 - SKILL.md
 - agents/openai.yaml
 - assets/icon.svg
 
-README.md, CHANGELOG.md, AGENTS.md, tests и .github остаются только в репозитории.
+Архив плагина для ChatGPT Desktop содержит только:
+
+- plugin.json
+- skills/russian-response-standard/SKILL.md
+- skills/russian-response-standard/agents/openai.yaml
+- skills/russian-response-standard/assets/icon.svg
+
+Плагин собирается из тех же исходных файлов. При сборке только формулировка применимости в описании навыка расширяется с Work на Chat и Work, а интерфейсная подсказка вызова становится общей для обоих режимов. Остальные правила не меняются. README.md, CHANGELOG.md, AGENTS.md, tests и .github остаются только в репозитории.
 
 ## Автоматическая валидация
 
@@ -71,6 +79,7 @@ python3 scripts/validate-package.py
 Валидатор проверяет:
 
 - обязательные файлы репозитория
+- сборку и содержимое архива плагина
 - структуру YAML frontmatter в SKILL.md
 - формат и единственность версии в SKILL.md
 - совпадение текущей версии с первой записью CHANGELOG.md
@@ -79,7 +88,7 @@ python3 scripts/validate-package.py
 - отсутствие inline-code оформления вне fenced code blocks в SKILL.md
 - базовую согласованность agents/openai.yaml, README.md и release workflow
 
-Release workflow дополнительно проверяет точный состав готового ZIP-архива.
+Release workflow дополнительно проверяет точный состав готового ZIP-архива навыка и публикует оба проверенных пакета в одном GitHub Release.
 
 ## Проверки перед публикацией
 
@@ -89,4 +98,5 @@ Release workflow дополнительно проверяет точный со
 - версия в SKILL.md совпадает с новой записью CHANGELOG.md
 - для версии ещё не существует GitHub Release
 - изменения поведения покрыты существующими или новыми regression tests
-- installable ZIP содержит только SKILL.md, agents/openai.yaml и assets/icon.svg
+- архив навыка содержит только SKILL.md, agents/openai.yaml и assets/icon.svg
+- архив плагина содержит только plugin.json и три файла навыка в папке skills/russian-response-standard

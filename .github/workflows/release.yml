@@ -8,6 +8,7 @@ on:
       - SKILL.md
       - agents/openai.yaml
       - assets/**
+      - scripts/build-plugin.py
       - .github/workflows/release.yml
   workflow_dispatch:
 
@@ -128,6 +129,14 @@ jobs:
           print("Installable ZIP contents are valid")
           PY
 
+      - name: Build plugin ZIP
+        shell: bash
+        run: |
+          set -euo pipefail
+          PLUGIN_ARCHIVE="russian-response-standard-plugin-${{ steps.version.outputs.version }}.zip"
+          python3 scripts/build-plugin.py "$PLUGIN_ARCHIVE"
+          echo "PLUGIN_ARCHIVE=$PLUGIN_ARCHIVE" >> "$GITHUB_ENV"
+
       - name: Publish GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
@@ -135,7 +144,7 @@ jobs:
         run: |
           set -euo pipefail
           VERSION="${{ steps.version.outputs.version }}"
-          gh release create "$VERSION" "$ARCHIVE" \
+          gh release create "$VERSION" "$ARCHIVE" "$PLUGIN_ARCHIVE" \
             --target "$GITHUB_SHA" \
             --title "$VERSION" \
             --notes-file release-notes.md

@@ -4,6 +4,9 @@
 from __future__ import annotations
 
 import re
+import subprocess
+import sys
+import tempfile
 from pathlib import Path
 
 
@@ -33,6 +36,7 @@ REQUIRED_FILES = [
     "assets/icon.svg",
     "tests/regression.md",
     "scripts/validate-package.py",
+    "scripts/build-plugin.py",
     ".github/workflows/release.yml",
     ".github/workflows/validate.yml",
 ]
@@ -126,11 +130,19 @@ for link in ("[CHANGELOG.md](CHANGELOG.md)", "[AGENTS.md](AGENTS.md)"):
 
 workflow_fragments = [
     "python3 scripts/validate-package.py",
+    "python3 scripts/build-plugin.py",
     "--notes-file release-notes.md",
     "Validate installable ZIP",
+    '"$PLUGIN_ARCHIVE"',
 ]
 for fragment in workflow_fragments:
     if fragment not in release_workflow:
         fail(f"release workflow is missing required protection: {fragment}")
+
+with tempfile.TemporaryDirectory() as directory:
+    subprocess.run(
+        [sys.executable, str(ROOT / "scripts/build-plugin.py"), str(Path(directory) / "plugin.zip")],
+        check=True,
+    )
 
 print(f"Russian Response Standard {version} package is valid")
