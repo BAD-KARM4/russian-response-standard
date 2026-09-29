@@ -36,7 +36,7 @@ Skill задаёт правила для:
 
 На странице GitHub Releases выберите нужный архив:
 
-- `russian-response-standard-vX.Y.Z.zip` - навык для ChatGPT Work. Он содержит `SKILL.md`, `agents/openai.yaml` и `assets/icon.svg`.
+- `russian-response-standard-skill-vX.Y.Z.zip` - навык для ChatGPT Work. Он содержит `SKILL.md`, `agents/openai.yaml` и `assets/icon.svg`.
 - `russian-response-standard-plugin-vX.Y.Z.zip` - плагин для ChatGPT Desktop. Он содержит манифест и тот же навык в папке `skills/`.
 
 Плагин собирается из основного SKILL.md. В его копии описание расширено на Chat и Work, а интерфейсная подсказка не использует синтаксис Codex. Остальные правила навыка совпадают с основным пакетом.
